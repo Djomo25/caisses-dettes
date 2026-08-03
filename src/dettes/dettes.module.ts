@@ -7,5 +7,6 @@ import { DettesService } from './dettes.service';
   imports: [AuthModule],
   controllers: [DettesController],
   providers: [DettesService],
+  exports: [DettesService],
 })
 export class DettesModule {}

@@ -24,13 +24,21 @@ export class MailerService {
     });
   }
 
-  async sendCodeConnexion(email: string, code: string): Promise<void> {
+  async envoyerEmail(to: string, sujet: string, corps: string): Promise<void> {
     await this.transporter.sendMail({
       from: this.from,
-      to: email,
-      subject: 'Votre code de connexion',
-      text: `Votre code est ${code}, valable 10 minutes.`,
+      to,
+      subject: sujet,
+      text: corps,
     });
-    this.logger.log(`Code de connexion envoyé à ${email}`);
+    this.logger.log(`Email "${sujet}" envoyé à ${to}`);
+  }
+
+  async sendCodeConnexion(email: string, code: string): Promise<void> {
+    await this.envoyerEmail(
+      email,
+      'Votre code de connexion',
+      `Votre code est ${code}, valable 10 minutes.`,
+    );
   }
 }

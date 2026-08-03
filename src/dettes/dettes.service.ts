@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { APP_TIMEZONE, getDayRangeInTimezone } from '../common/timezone';
 import { CreateDetteDto } from './dto/create-dette.dto';
 
 @Injectable()
@@ -28,6 +29,23 @@ export class DettesService {
         ...(statut ? { statut } : {}),
       },
       orderBy: { dateEcheance: { sort: 'asc', nulls: 'last' } },
+    });
+  }
+
+  /**
+   * Dettes non payées dont l'échéance tombe le jour calendaire courant
+   * (fuseau APP_TIMEZONE), tous commerçants confondus. Utilisé par le
+   * rappel quotidien (cron).
+   */
+  findDettesEcheanceAujourdhui(reference: Date = new Date()) {
+    const { start, end } = getDayRangeInTimezone(APP_TIMEZONE, reference);
+
+    return this.prisma.detteClient.findMany({
+      where: {
+        statut: 'due',
+        dateEcheance: { gte: start, lt: end },
+      },
+      orderBy: { commercantId: 'asc' },
     });
   }
 

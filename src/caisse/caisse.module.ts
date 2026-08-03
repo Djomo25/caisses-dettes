@@ -7,5 +7,6 @@ import { CaisseService } from './caisse.service';
   imports: [AuthModule],
   controllers: [CaisseController],
   providers: [CaisseService],
+  exports: [CaisseService],
 })
 export class CaisseModule {}

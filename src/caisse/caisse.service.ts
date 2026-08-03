@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import {
+  APP_TIMEZONE,
+  getDayRangeForDateString,
+  getDayRangeInTimezone,
+} from '../common/timezone';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 
 const LAST_TRANSACTIONS_LIMIT = 50;
@@ -23,7 +28,7 @@ export class CaisseService {
 
   listTransactions(commercantId: string, date?: string) {
     if (date) {
-      const { start, end } = this.dayRange(date);
+      const { start, end } = getDayRangeForDateString(APP_TIMEZONE, date);
       return this.prisma.transactionCaisse.findMany({
         where: {
           commercantId,
@@ -40,8 +45,12 @@ export class CaisseService {
     });
   }
 
-  async getSolde(commercantId: string, periode: 'jour' | 'semaine' = 'jour') {
-    const { start, end } = this.periodeRange(periode);
+  async getSolde(
+    commercantId: string,
+    periode: 'jour' | 'semaine' = 'jour',
+    reference: Date = new Date(),
+  ) {
+    const { start, end } = this.periodeRange(periode, reference);
 
     const [entreesResult, sortiesResult] = await Promise.all([
       this.prisma.transactionCaisse.aggregate({
@@ -68,21 +77,33 @@ export class CaisseService {
     return { entrees, sorties, solde: entrees - sorties };
   }
 
-  private dayRange(date: string): { start: Date; end: Date } {
-    const start = new Date(`${date}T00:00:00.000Z`);
-    const end = new Date(start.getTime() + MS_PER_DAY);
-    return { start, end };
+  /**
+   * Identifiants des commerçants ayant au moins une transaction datée du
+   * jour calendaire courant (fuseau APP_TIMEZONE). Utilisé par le récap
+   * quotidien (cron).
+   */
+  async findCommercantIdsAvecTransactionsAujourdhui(
+    reference: Date = new Date(),
+  ): Promise<string[]> {
+    const { start, end } = getDayRangeInTimezone(APP_TIMEZONE, reference);
+
+    const rows = await this.prisma.transactionCaisse.findMany({
+      where: { date: { gte: start, lt: end } },
+      distinct: ['commercantId'],
+      select: { commercantId: true },
+    });
+
+    return rows.map((row) => row.commercantId);
   }
 
-  private periodeRange(periode: 'jour' | 'semaine'): {
-    start: Date;
-    end: Date;
-  } {
-    const now = new Date();
-    const todayStart = new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+  private periodeRange(
+    periode: 'jour' | 'semaine',
+    reference: Date,
+  ): { start: Date; end: Date } {
+    const { start: todayStart, end } = getDayRangeInTimezone(
+      APP_TIMEZONE,
+      reference,
     );
-    const end = new Date(todayStart.getTime() + MS_PER_DAY);
     const days = periode === 'semaine' ? 7 : 1;
     const start = new Date(todayStart.getTime() - (days - 1) * MS_PER_DAY);
 
