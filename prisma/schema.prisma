@@ -1,0 +1,54 @@
+// Schéma Prisma - Suivi de caisse et de dettes clients
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Commercant {
+  id             String               @id @default(cuid())
+  nom            String
+  email          String               @unique
+  createdAt      DateTime             @default(now())
+  transactions   TransactionCaisse[]
+  dettes         DetteClient[]
+  codesConnexion CodeConnexion[]
+}
+
+model CodeConnexion {
+  id           String     @id @default(cuid())
+  commercantId String
+  commercant   Commercant @relation(fields: [commercantId], references: [id])
+  code         String
+  expireAt     DateTime
+  utilise      Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+}
+
+model TransactionCaisse {
+  id           String     @id @default(cuid())
+  commercantId String
+  commercant   Commercant @relation(fields: [commercantId], references: [id])
+  type         String // "entree" ou "sortie"
+  montant      Int
+  libelle      String?
+  date         DateTime   @default(now())
+  createdAt    DateTime   @default(now())
+}
+
+model DetteClient {
+  id           String     @id @default(cuid())
+  commercantId String
+  commercant   Commercant @relation(fields: [commercantId], references: [id])
+  nomClient    String
+  montant      Int
+  dateEcheance DateTime?
+  statut       String     @default("due") // "due" ou "payee"
+  createdAt    DateTime   @default(now())
+  paidAt       DateTime?
+}
