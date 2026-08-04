@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps -- deps est fourni par l'appelant, qui contrôle quand refetch */
-import { useEffect, useState, type DependencyList } from 'react'
+import { useCallback, useEffect, useRef, useState, type DependencyList } from 'react'
 import { ApiError } from '../api/client'
 
 interface ApiResourceState<T> {
@@ -11,18 +11,22 @@ interface ApiResourceState<T> {
 export function useApiResource<T>(
   fetcher: () => Promise<T>,
   deps: DependencyList,
-): ApiResourceState<T> {
+): ApiResourceState<T> & { refetch: () => void } {
   const [state, setState] = useState<ApiResourceState<T>>({
     data: null,
     loading: true,
     error: null,
   })
 
-  useEffect(() => {
+  const fetcherRef = useRef(fetcher)
+  fetcherRef.current = fetcher
+
+  const load = useCallback(() => {
     let cancelled = false
     setState({ data: null, loading: true, error: null })
 
-    fetcher()
+    fetcherRef
+      .current()
       .then((data) => {
         if (!cancelled) setState({ data, loading: false, error: null })
       })
@@ -35,7 +39,9 @@ export function useApiResource<T>(
     return () => {
       cancelled = true
     }
-  }, deps)
+  }, [])
 
-  return state
+  useEffect(() => load(), deps)
+
+  return { ...state, refetch: load }
 }

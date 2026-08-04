@@ -4,35 +4,36 @@ import { getDettes } from '../api/dettes'
 import { useApiResource } from '../hooks/useApiResource'
 import { useAuth } from '../auth/useAuth'
 import { Modal, type ModalType } from '../components/Modal'
-import { formatHeure, formatMontant, getInitiales } from '../utils/format'
+import { TransactionRow } from '../components/TransactionRow'
+import { formatMontant } from '../utils/format'
+import { todayISO } from '../utils/date'
 import styles from './Accueil.module.css'
 
 const NB_TRANSACTIONS_RECENTES = 4
 
-function todayISO(): string {
-  return new Date().toISOString().slice(0, 10)
-}
-
 export function Accueil() {
-  const { token, nom, email, logout } = useAuth()
+  const { token } = useAuth()
   const [modalType, setModalType] = useState<ModalType | null>(null)
 
   const {
     data: solde,
     loading: soldeLoading,
     error: soldeError,
+    refetch: refetchSolde,
   } = useApiResource(() => getSolde(token!, 'jour'), [token])
 
   const {
     data: transactions,
     loading: transactionsLoading,
     error: transactionsError,
+    refetch: refetchTransactions,
   } = useApiResource(() => getTransactions(token!), [token])
 
   const {
     data: dettesDue,
     loading: dettesLoading,
     error: dettesError,
+    refetch: refetchDettesDue,
   } = useApiResource(() => getDettes(token!, 'due'), [token])
 
   const dettesEchues = useMemo(() => {
@@ -44,49 +45,31 @@ export function Accueil() {
   }, [dettesDue])
 
   const activiteRecente = transactions?.slice(0, NB_TRANSACTIONS_RECENTES) ?? []
-  const initiales = getInitiales(nom, email)
+
+  function handleSaved() {
+    refetchSolde()
+    refetchTransactions()
+    refetchDettesDue()
+  }
 
   return (
-    <div className={styles.shell}>
-      <div className={styles.binder}>
-        {Array.from({ length: 6 }).map((_, i) => (
-          <i key={i} className={styles.dotBinder} />
-        ))}
-      </div>
-
-      <header className={styles.topbar}>
-        <div>
-          <div className={styles.eyebrow}>Carnet du jour</div>
-          <h1 className={styles.titre}>{nom ?? email ?? 'Commerçant'}</h1>
-        </div>
-        <button
-          type="button"
-          className={styles.avatarBtn}
-          onClick={logout}
-          title="Se déconnecter"
-        >
-          <span className={styles.avatar}>{initiales}</span>
-        </button>
-      </header>
-
-      <section className={styles.soldeCard}>
-        <p className={styles.soldeLabel}>Solde aujourd'hui</p>
+    <>
+      <section className="solde-card">
+        <p className="label">Solde aujourd'hui</p>
         {soldeLoading ? (
           <div className={`squelette ${styles.soldeSquelette}`} />
         ) : soldeError ? (
           <p className={styles.erreurSombre}>{soldeError}</p>
         ) : (
           <>
-            <div className={`${styles.soldeAmount} chiffre`}>
-              {formatMontant(solde!.solde)}
-            </div>
-            <div className={styles.soldeSplit}>
-              <div className={styles.item}>
-                <span className={`${styles.dot} ${styles.dotIn}`} />
+            <div className="solde-amount chiffre">{formatMontant(solde!.solde)}</div>
+            <div className="solde-split">
+              <div className="item">
+                <span className="dot in" />
                 <span>{formatMontant(solde!.entrees)} entrées</span>
               </div>
-              <div className={styles.item}>
-                <span className={`${styles.dot} ${styles.dotOut}`} />
+              <div className="item">
+                <span className="dot out" />
                 <span>{formatMontant(solde!.sorties)} sorties</span>
               </div>
             </div>
@@ -94,56 +77,52 @@ export function Accueil() {
         )}
       </section>
 
-      <div className={styles.quickActions}>
+      <div className="quick-actions">
         <button
           type="button"
-          className={`${styles.qaBtn} ${styles.entree}`}
+          className="qa-btn entree"
           onClick={() => setModalType('entree')}
         >
-          <span className={styles.qaIc}>+</span>
-          <span className={styles.qaLbl}>Entrée</span>
+          <span className="ic">+</span>
+          <span className="lbl">Entrée</span>
         </button>
         <button
           type="button"
-          className={`${styles.qaBtn} ${styles.sortie}`}
+          className="qa-btn sortie"
           onClick={() => setModalType('sortie')}
         >
-          <span className={styles.qaIc}>–</span>
-          <span className={styles.qaLbl}>Sortie</span>
+          <span className="ic">–</span>
+          <span className="lbl">Sortie</span>
         </button>
         <button
           type="button"
-          className={`${styles.qaBtn} ${styles.dette}`}
+          className="qa-btn dette"
           onClick={() => setModalType('dette')}
         >
-          <span className={styles.qaIc}>◍</span>
-          <span className={styles.qaLbl}>Dette</span>
+          <span className="ic">◍</span>
+          <span className="lbl">Dette</span>
         </button>
       </div>
 
       {dettesEchues.length > 0 && (
-        <div className={styles.alertBox}>
-          <span className={styles.bell}>◍</span>
-          <p className={styles.alertText}>
+        <div className="alert-box">
+          <span className="bell">◍</span>
+          <p>
             {dettesEchues.length}
             {dettesEchues.length > 1
               ? ' dettes arrivent à échéance'
               : ' dette arrive à échéance'}
-            <small className={styles.alertSub}>
-              {dettesEchues.map((d) => d.nomClient).join(', ')}
-            </small>
+            <small>{dettesEchues.map((d) => d.nomClient).join(', ')}</small>
           </p>
         </div>
       )}
       {dettesError && <p className="erreur">{dettesError}</p>}
       {dettesLoading && <div className={`squelette ${styles.alertSquelette}`} />}
 
-      <section className={styles.section}>
-        <div className={styles.sectionHead}>
+      <section className="section">
+        <div className="section-head">
           <h2>Activité récente</h2>
-          <span className={`${styles.count} chiffre`}>
-            {transactions?.length ?? 0}
-          </span>
+          <span className="count chiffre">{transactions?.length ?? 0}</span>
         </div>
 
         {transactionsLoading ? (
@@ -155,38 +134,18 @@ export function Accueil() {
         ) : transactionsError ? (
           <p className="erreur">{transactionsError}</p>
         ) : activiteRecente.length === 0 ? (
-          <p className={styles.emptyMsg}>Aucune transaction pour l'instant.</p>
+          <p className="empty-msg">Aucune transaction pour l'instant.</p>
         ) : (
-          activiteRecente.map((t) => {
-            const estEntree = t.type === 'entree'
-            return (
-              <div key={t.id} className={styles.entryRow}>
-                <div className={styles.entryLeft}>
-                  <div
-                    className={`${styles.entryIc} ${estEntree ? styles.in : styles.out}`}
-                  >
-                    {estEntree ? '+' : '–'}
-                  </div>
-                  <div>
-                    <p className={styles.entryName}>
-                      {t.libelle || (estEntree ? 'Entrée' : 'Sortie')}
-                    </p>
-                    <p className={styles.entryTime}>{formatHeure(t.date)}</p>
-                  </div>
-                </div>
-                <div
-                  className={`${styles.entryAmt} chiffre ${estEntree ? styles.in : styles.out}`}
-                >
-                  {estEntree ? '+' : '-'}
-                  {formatMontant(t.montant)}
-                </div>
-              </div>
-            )
-          })
+          activiteRecente.map((t) => <TransactionRow key={t.id} transaction={t} />)
         )}
       </section>
 
-      <Modal type={modalType} onClose={() => setModalType(null)} />
-    </div>
+      <Modal
+        type={modalType}
+        token={token!}
+        onClose={() => setModalType(null)}
+        onSaved={handleSaved}
+      />
+    </>
   )
 }

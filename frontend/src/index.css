@@ -175,3 +175,440 @@ button {
     background-position: 0 50%;
   }
 }
+
+/* ================= coquille de l'app (reliure / header / onglets) ================= */
+
+.shell {
+  max-width: 400px;
+  margin: 0 auto;
+  min-height: 100svh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 74px;
+  position: relative;
+}
+
+.binder {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  padding: 14px 0 0;
+}
+
+.binder i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink);
+  opacity: 0.18;
+}
+
+.topbar {
+  padding: 14px 22px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.topbar h1 {
+  font-size: 22px;
+  margin: 2px 0 0;
+}
+
+.avatar-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 400px;
+  background: var(--card);
+  border-top: 1px solid var(--paper-line);
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0 12px;
+}
+
+.tab-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: var(--muted);
+  background: none;
+  border: none;
+}
+
+.tab-btn.active {
+  color: var(--ink);
+}
+
+.tab-btn .ic {
+  font-size: 18px;
+}
+
+.tab-btn span:last-child {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* ================= carte solde ================= */
+
+.solde-card {
+  margin: 0 22px 16px;
+  background: var(--ink);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.solde-card .label {
+  font-size: 12px;
+  color: rgba(247, 242, 231, 0.55);
+  margin: 0;
+}
+
+.solde-amount {
+  font-weight: 600;
+  font-size: 30px;
+  color: var(--paper);
+  margin: 6px 0 16px;
+  letter-spacing: -0.01em;
+}
+
+.solde-split {
+  display: flex;
+  gap: 18px;
+}
+
+.solde-split .item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(247, 242, 231, 0.75);
+}
+
+.solde-split .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.solde-split .dot.in {
+  background: #7fd9a6;
+}
+
+.solde-split .dot.out {
+  background: #e39a82;
+}
+
+/* ================= actions rapides ================= */
+
+.quick-actions {
+  display: flex;
+  gap: 10px;
+  margin: 0 22px 18px;
+}
+
+.qa-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 0;
+  border-radius: var(--radius-sm);
+  transition: transform 0.12s;
+  background: none;
+  border: none;
+}
+
+.qa-btn:active {
+  transform: scale(0.96);
+}
+
+.qa-btn.entree {
+  background: var(--entree-bg);
+}
+
+.qa-btn.sortie {
+  background: var(--sortie-bg);
+}
+
+.qa-btn.dette {
+  background: var(--dette-bg);
+}
+
+.qa-btn .ic {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.qa-btn.entree .ic,
+.qa-btn.entree .lbl {
+  color: var(--entree);
+}
+
+.qa-btn.sortie .ic,
+.qa-btn.sortie .lbl {
+  color: var(--sortie);
+}
+
+.qa-btn.dette .ic,
+.qa-btn.dette .lbl {
+  color: var(--dette);
+}
+
+.qa-btn .lbl {
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+/* ================= alerte dettes ================= */
+
+.alert-box {
+  margin: 0 22px 18px;
+  background: var(--dette-bg);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.alert-box .bell {
+  font-size: 16px;
+  color: var(--dette);
+  flex-shrink: 0;
+}
+
+.alert-box p {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #7a5417;
+}
+
+.alert-box small {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: #9a6e22;
+  margin-top: 1px;
+}
+
+/* ================= sections / listes ================= */
+
+.section {
+  padding: 0 22px 8px;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.section-head h2 {
+  font-size: 16px;
+}
+
+.section-head .count {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.entry-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px dashed var(--paper-line);
+}
+
+.entry-row:last-child {
+  border-bottom: none;
+}
+
+.entry-left {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.entry-ic {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.entry-ic.in {
+  background: var(--entree-bg);
+  color: var(--entree);
+}
+
+.entry-ic.out {
+  background: var(--sortie-bg);
+  color: var(--sortie);
+}
+
+.entry-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.entry-time {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 1px 0 0;
+}
+
+.entry-amt {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.entry-amt.in {
+  color: var(--entree);
+}
+
+.entry-amt.out {
+  color: var(--sortie);
+}
+
+.dette-card {
+  background: var(--card);
+  border: 1px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  padding: 13px 14px;
+  margin-bottom: 10px;
+}
+
+.dette-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.dette-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.dette-due {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 2px 0 0;
+}
+
+.dette-due.late {
+  color: var(--sortie);
+  font-weight: 600;
+}
+
+.dette-amt {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--dette);
+}
+
+.dette-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-pay {
+  flex: 1;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 9px 0;
+  border-radius: 9px;
+  border: none;
+}
+
+.btn-pay.paid {
+  background: var(--entree-bg);
+  color: var(--entree);
+}
+
+.empty-msg {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  padding: 28px 0;
+}
+
+/* ================= toast ================= */
+
+.toast {
+  position: fixed;
+  bottom: 88px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 11px 18px;
+  border-radius: 11px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s ease;
+  max-width: 88%;
+  text-align: center;
+  z-index: 60;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

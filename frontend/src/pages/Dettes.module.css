@@ -1,0 +1,9 @@
+.listeSquelette {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.carteSquelette {
+  height: 74px;
+}

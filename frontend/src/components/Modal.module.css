@@ -21,11 +21,8 @@
   margin: 0 0 14px;
 }
 
-.placeholder {
-  margin: 0;
-  font-size: 13px;
-  color: var(--muted);
-  padding: 8px 0 4px;
+.champWrap {
+  margin-bottom: 12px;
 }
 
 .actions {
@@ -43,4 +40,20 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--ink);
+}
+
+.confirmer {
+  flex: 2;
+  padding: 12px 0;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.confirmer:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
