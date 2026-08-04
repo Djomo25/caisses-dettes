@@ -1,0 +1,21 @@
+.page {
+  flex: 1;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.carte {
+  padding: 24px;
+  color: var(--muted);
+}

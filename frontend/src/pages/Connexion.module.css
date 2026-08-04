@@ -1,0 +1,43 @@
+.page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.carte {
+  width: 100%;
+  max-width: 380px;
+  padding: 32px 28px;
+}
+
+.titre {
+  font-size: 32px;
+  text-align: center;
+}
+
+.sousTitre {
+  margin-top: 6px;
+  margin-bottom: 28px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.champCode {
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 8px;
+}
