@@ -39,7 +39,10 @@ export function Connexion() {
     setChargement(true)
     try {
       const { token } = await verifyCode(email.trim(), code.trim())
-      login(token)
+      login(token, {
+        email: email.trim(),
+        nom: estNouveau ? nom.trim() : undefined,
+      })
       navigate('/', { replace: true })
     } catch (err) {
       setErreur(err instanceof ApiError ? err.message : 'Impossible de contacter le serveur.')

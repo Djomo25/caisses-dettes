@@ -154,3 +154,24 @@ button {
   padding: 10px 14px;
   font-size: 14px;
 }
+
+.squelette {
+  background: linear-gradient(
+    90deg,
+    var(--paper-line) 25%,
+    rgba(30, 42, 34, 0.18) 37%,
+    var(--paper-line) 63%
+  );
+  background-size: 400% 100%;
+  border-radius: var(--radius-sm);
+  animation: squelette-anim 1.4s ease infinite;
+}
+
+@keyframes squelette-anim {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}

@@ -1,0 +1,46 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 42, 34, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 50;
+}
+
+.sheet {
+  width: 100%;
+  max-width: 400px;
+  background: var(--card);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 20px 22px 26px;
+}
+
+.titre {
+  font-size: 17px;
+  margin: 0 0 14px;
+}
+
+.placeholder {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  padding: 8px 0 4px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.annuler {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--paper-line);
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}

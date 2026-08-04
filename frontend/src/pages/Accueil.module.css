@@ -1,21 +1,335 @@
-.page {
+.shell {
   flex: 1;
-  max-width: 640px;
   width: 100%;
+  max-width: 400px;
   margin: 0 auto;
-  padding: 32px 24px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
 }
 
-.entete {
+/* ---- reliure / header ---- */
+.binder {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  padding: 14px 0 0;
+}
+
+.dotBinder {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink);
+  opacity: 0.18;
+}
+
+.topbar {
+  padding: 14px 22px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.titre {
+  font-size: 22px;
+  margin: 2px 0 0;
+}
+
+.avatarBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.carte {
-  padding: 24px;
+/* ---- solde card ---- */
+.soldeCard {
+  margin: 0 22px 16px;
+  background: var(--ink);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.soldeLabel {
+  font-size: 12px;
+  color: rgba(247, 242, 231, 0.55);
+  margin: 0;
+}
+
+.soldeAmount {
+  font-weight: 600;
+  font-size: 30px;
+  color: var(--paper);
+  margin: 6px 0 16px;
+  letter-spacing: -0.01em;
+}
+
+.soldeSquelette {
+  height: 30px;
+  width: 60%;
+  margin: 6px 0 16px;
+  background-color: rgba(247, 242, 231, 0.12);
+}
+
+.erreurSombre {
+  color: #e39a82;
+  font-size: 13px;
+  margin: 6px 0 4px;
+}
+
+.soldeSplit {
+  display: flex;
+  gap: 18px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(247, 242, 231, 0.75);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotIn {
+  background: #7fd9a6;
+}
+
+.dotOut {
+  background: #e39a82;
+}
+
+/* ---- actions rapides ---- */
+.quickActions {
+  display: flex;
+  gap: 10px;
+  margin: 0 22px 18px;
+}
+
+.qaBtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 0;
+  border-radius: var(--radius-sm);
+  transition: transform 0.12s;
+  background: none;
+  border: none;
+}
+
+.qaBtn:active {
+  transform: scale(0.96);
+}
+
+.qaBtn.entree {
+  background: var(--entree-bg);
+}
+
+.qaBtn.sortie {
+  background: var(--sortie-bg);
+}
+
+.qaBtn.dette {
+  background: var(--dette-bg);
+}
+
+.qaIc {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.entree .qaIc,
+.entree .qaLbl {
+  color: var(--entree);
+}
+
+.sortie .qaIc,
+.sortie .qaLbl {
+  color: var(--sortie);
+}
+
+.dette .qaIc,
+.dette .qaLbl {
+  color: var(--dette);
+}
+
+.qaLbl {
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+/* ---- alerte dettes ---- */
+.alertBox {
+  margin: 0 22px 18px;
+  background: var(--dette-bg);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.bell {
+  font-size: 16px;
+  color: var(--dette);
+  flex-shrink: 0;
+}
+
+.alertText {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #7a5417;
+}
+
+.alertSub {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: #9a6e22;
+  margin-top: 1px;
+}
+
+.alertSquelette {
+  height: 46px;
+  margin: 0 22px 18px;
+}
+
+/* ---- sections ---- */
+.section {
+  padding: 0 22px 8px;
+}
+
+.sectionHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.sectionHead h2 {
+  font-size: 16px;
+}
+
+.count {
+  font-size: 11px;
   color: var(--muted);
+}
+
+.listeSquelette {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rowSquelette {
+  height: 46px;
+}
+
+.entryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px dashed var(--paper-line);
+}
+
+.entryRow:last-child {
+  border-bottom: none;
+}
+
+.entryLeft {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.entryIc {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.entryIc.in {
+  background: var(--entree-bg);
+  color: var(--entree);
+}
+
+.entryIc.out {
+  background: var(--sortie-bg);
+  color: var(--sortie);
+}
+
+.entryName {
+  font-size: 13.5px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.entryTime {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 1px 0 0;
+}
+
+.entryAmt {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.entryAmt.in {
+  color: var(--entree);
+}
+
+.entryAmt.out {
+  color: var(--sortie);
+}
+
+.emptyMsg {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  padding: 28px 0;
 }
