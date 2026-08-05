@@ -41,3 +41,18 @@
   font-size: 24px;
   letter-spacing: 8px;
 }
+
+.piedDePage {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.lien,
+.lienErreur {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

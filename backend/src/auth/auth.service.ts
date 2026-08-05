@@ -1,9 +1,11 @@
 import {
-  BadRequestException,
+  ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Commercant } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailerService } from '../mailer/mailer.service';
 import { RequestCodeDto } from './dto/request-code.dto';
@@ -21,19 +23,28 @@ export class AuthService {
   ) {}
 
   async requestCode(dto: RequestCodeDto): Promise<{ success: true }> {
-    let commercant = await this.prisma.commercant.findUnique({
+    const commercantExistant = await this.prisma.commercant.findUnique({
       where: { email: dto.email },
     });
 
-    if (!commercant) {
-      if (!dto.nom) {
-        throw new BadRequestException(
-          'Le nom est requis pour créer un compte avec cet email.',
+    let commercant: Commercant;
+
+    if (dto.nom) {
+      if (commercantExistant) {
+        throw new ConflictException(
+          'Un compte existe déjà avec cet email, connectez-vous plutôt.',
         );
       }
       commercant = await this.prisma.commercant.create({
         data: { email: dto.email, nom: dto.nom },
       });
+    } else {
+      if (!commercantExistant) {
+        throw new NotFoundException(
+          "Aucun compte trouvé avec cet email, créez un compte d'abord.",
+        );
+      }
+      commercant = commercantExistant;
     }
 
     const code = this.generateCode();
