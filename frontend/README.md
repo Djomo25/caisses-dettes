@@ -1,32 +1,25 @@
-# React + TypeScript + Vite
+# Carnet — frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+PWA React + Vite + TypeScript pour le suivi de caisse et de dettes clients (commerçants informels à Kinshasa).
 
-Currently, two official plugins are available:
+## Développement local
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+cp .env.example .env   # puis renseigner VITE_API_URL (URL du backend)
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Déploiement (Vercel)
+
+Le dépôt est un monorepo (`backend/` + `frontend/`) : sur Vercel, créer le projet avec **Root Directory = `frontend`**.
+
+1. **New Project** sur [vercel.com](https://vercel.com) → *Import Git Repository* → sélectionner ce dépôt.
+2. Dans les options d'import, régler **Root Directory** sur `frontend`. Vercel détecte automatiquement le framework (Vite) — build command et output directory n'ont pas besoin d'être modifiés.
+3. **Environment Variables** → ajouter `VITE_API_URL` avec l'URL du backend déployé (ex. `https://caisses-dettes-production.up.railway.app`), sans slash final.
+4. `vercel.json` (à la racine de `frontend/`) redirige toutes les routes vers `index.html`, nécessaire pour que le routing côté client (React Router) fonctionne sur un rechargement ou un lien direct (`/caisse`, `/dettes`, etc.).
+5. Déployer. Une fois en ligne, mettre à jour `FRONTEND_URL` sur le service backend (Railway) avec l'URL Vercel finale, pour restreindre le CORS (au lieu de `*`).
+
+### Note PWA
+
+`vite-plugin-pwa` génère le service worker et le manifeste automatiquement au build (`registerType: 'autoUpdate'`) — aucune configuration Vercel additionnelle n'est nécessaire pour ça.
