@@ -1,36 +1,35 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createTransport, Transporter } from 'nodemailer';
+import { Resend } from 'resend';
 
 @Injectable()
 export class MailerService {
   private readonly logger = new Logger(MailerService.name);
-  private readonly transporter: Transporter;
+  private readonly resend: Resend;
   private readonly from: string;
 
   constructor(private readonly config: ConfigService) {
     this.from = this.config.get<string>(
-      'SMTP_FROM',
+      'MAIL_FROM',
       'no-reply@caisse-dettes.local',
     );
-    this.transporter = createTransport({
-      host: this.config.get<string>('SMTP_HOST'),
-      port: this.config.get<number>('SMTP_PORT', 587),
-      secure: this.config.get<number>('SMTP_PORT', 587) === 465,
-      auth: {
-        user: this.config.get<string>('SMTP_USER'),
-        pass: this.config.get<string>('SMTP_PASS'),
-      },
-    });
+    this.resend = new Resend(this.config.get<string>('RESEND_API_KEY'));
   }
 
   async envoyerEmail(to: string, sujet: string, corps: string): Promise<void> {
-    await this.transporter.sendMail({
+    const { error } = await this.resend.emails.send({
       from: this.from,
       to,
       subject: sujet,
       text: corps,
     });
+
+    if (error) {
+      throw new Error(
+        `Échec de l'envoi de l'email via Resend : ${error.message}`,
+      );
+    }
+
     this.logger.log(`Email "${sujet}" envoyé à ${to}`);
   }
 

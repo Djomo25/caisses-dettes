@@ -1,98 +1,59 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Carnet — backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API NestJS + Prisma pour le suivi de caisse et de dettes clients (commerçants informels à Kinshasa).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+## Développement local
 
 ```bash
-$ npm install
+npm install
+cp .env.example .env   # puis renseigner DATABASE_URL, JWT_SECRET, RESEND_API_KEY
+npx prisma migrate deploy
+npm run start:dev
 ```
 
-## Compile and run the project
+`GET /health` retourne `{ status: "ok", db: true|false }`.
 
-```bash
-# development
-$ npm run start
+### Emails
 
-# watch mode
-$ npm run start:dev
+L'envoi des codes de connexion passe par [Resend](https://resend.com) (API HTTPS), pas par du SMTP classique :
+Railway et la plupart des PaaS bloquent les ports SMTP sortants (25/465/587) sur les plans standards, ce qui
+casse nodemailer en production. Resend contourne ce blocage puisqu'il n'utilise que des requêtes HTTPS.
 
-# production mode
-$ npm run start:prod
-```
+Pour développer en local, crée un compte gratuit sur [resend.com](https://resend.com), génère une clé API
+(*API Keys* → *Create API Key*), et mets-la dans `RESEND_API_KEY`. Sans domaine vérifié, Resend impose
+`onboarding@resend.dev` comme expéditeur et limite l'envoi à l'adresse email du compte Resend — suffisant
+pour tester. Pour envoyer à n'importe quel destinataire (production), vérifier un domaine dans Resend
+(*Domains* → *Add Domain*, puis ajouter les enregistrements DNS fournis) et utiliser une adresse de ce
+domaine dans `MAIL_FROM`.
 
-## Run tests
+## Variables d'environnement
 
-```bash
-# unit tests
-$ npm run test
+| Variable | Description |
+| --- | --- |
+| `DATABASE_URL` | Chaîne de connexion PostgreSQL |
+| `PORT` | Port d'écoute (injecté automatiquement par Railway) |
+| `FRONTEND_URL` | Origine autorisée en CORS (URL du frontend déployé) |
+| `JWT_SECRET` | Secret de signature des tokens JWT (30 jours de validité) |
+| `RESEND_API_KEY` | Clé API Resend pour l'envoi des codes de connexion par email |
+| `MAIL_FROM` | Adresse expéditeur (ex. `Carnet <no-reply@tondomaine.com>`) |
 
-# e2e tests
-$ npm run test:e2e
+## Déploiement (Railway)
 
-# test coverage
-$ npm run test:cov
-```
+Le dépôt est un monorepo (`backend/` + `frontend/`) : sur Railway, créer le service avec **Root Directory = `backend`**.
 
-## Deployment
+1. **Nouveau projet Railway** → *Deploy from GitHub repo* → sélectionner ce dépôt, `Root Directory: backend`.
+2. **Ajouter une base de données** → *New* → *Database* → *PostgreSQL*. Railway crée la variable `DATABASE_URL` sur ce service Postgres.
+3. Sur le service backend, onglet **Variables**, ajouter :
+   - `DATABASE_URL` → référencer `${{Postgres.DATABASE_URL}}` (autocomplétion Railway)
+   - `JWT_SECRET` → une valeur aléatoire forte, différente de celle utilisée en local (`openssl rand -hex 32`)
+   - `FRONTEND_URL` → l'URL du frontend une fois déployé (ex. `https://carnet.vercel.app`)
+   - `RESEND_API_KEY` → clé API Resend (voir section *Emails* ci-dessus). Sans ça, les commerçants ne reçoivent jamais leur code de connexion.
+   - `MAIL_FROM` → une adresse d'un domaine vérifié dans Resend (ex. `Carnet <no-reply@tondomaine.com>`)
+   - `PORT` → `3000` (fixe cette valeur explicitement : le champ "port cible" utilisé pour générer le domaine public ne synchronise pas automatiquement la variable `PORT` de l'app, il faut que les deux correspondent).
+4. Railway détecte Node.js via Nixpacks et lit `railway.json` à la racine de `backend/` : au déploiement, il exécute `npx prisma migrate deploy` (applique les migrations sur la base de prod) puis démarre l'app avec `npm run start:prod`. Le healthcheck interroge `/health`.
+5. **Settings → Networking → Generate Domain** : entre `3000` comme port cible (même valeur que la variable `PORT` ci-dessus).
+6. Une fois déployé, vérifier `https://<ton-service>.up.railway.app/health` → doit répondre `{"status":"ok","db":true}`.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### Migrations futures
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Chaque nouveau déploiement ré-exécute `prisma migrate deploy`, qui applique uniquement les migrations pas encore appliquées — pas besoin d'étape manuelle après un `git push`.
