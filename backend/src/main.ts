@@ -5,8 +5,9 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const frontendUrl = process.env.FRONTEND_URL?.replace(/\/+$/, '');
   app.enableCors({
-    origin: process.env.FRONTEND_URL ?? '*',
+    origin: frontendUrl || '*',
   });
 
   app.useGlobalPipes(
